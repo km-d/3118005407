@@ -83,27 +83,4 @@ public class Check {
         fw.write("两文的相似度为："+result);
         fw.close();
     }
-
-        //比较
-        for(int i=0;i<chars.length;i++){
-            for(int j=0;j<charsX.length;j++){
-                if(chars[i]==charsX[j]){
-                    charsX[j]='￥';//已匹配的就进行转化，避免重复
-                    repetNumber++;
-                    break;
-                }
-            }
-        }
-        R=(float)repetNumber/(float) chars.length;//单句话的重复率
-        return R;
-    }
-
-    //结果输出
-    public static void Output(float result,String resultadd) throws IOException {
-        File f=new File(resultadd);//新建txt文件
-        f.createNewFile();
-        FileWriter fw=new FileWriter(f);
-        fw.write("相似度："+result);
-        fw.close();
-    }
 }
