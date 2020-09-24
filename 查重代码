@@ -1,1 +1,85 @@
+import java.io.*;
+import java.util.Scanner;
 
+public class DuplicateCheck {
+    public static void main(String[] args)throws IOException {
+        float repetRate;//重复率
+        float R=0;//单句重复率
+        float RN=0;//单句重复率总和
+        System.out.println("请输入原文件的地址");
+        String[] paperX=Conver().split("。");//论文拆分，逗号截止
+        System.out.println("请输入测试文件的地址");
+        String[] paper=Conver().split("。");
+        System.out.println("请输入输出结果的地址");
+        String resultadd=Input();
+        long startTime = System.currentTimeMillis();//程序起始时间
+        //判断重复
+        for(int i=0;i<paper.length;i++){
+            paper[i]=paper[i].replaceAll("[^\u4E00-\u9FA5]","");//除去句子中的所有标点符号，只保留中文。
+            for(int j=0;j<paperX.length;j++){
+                paperX[j]=paperX[j].replaceAll("[^\u4E00-\u9FA5]","");//除去句子中的所有标点符号，只保留中文。
+                if(R<sentenceDuplication(paper[i],paperX[j])){
+                    R=sentenceDuplication(paper[i],paperX[j]);
+                }
+            }
+            RN=RN+R;
+        }
+        repetRate=RN/paper.length;
+        repetRate=(float) ((int)(repetRate*100))/100;//保留两位小数
+        System.out.println("======运行结束!======");
+        System.out.println("相似度："+repetRate);
+        long endTime = System.currentTimeMillis();//程序结束时间
+        System.out.println("Time Speeding: " + ((endTime - startTime) / 1000D) + "s");//程序运行耗时
+        Output(repetRate,resultadd);
+    }
+
+    //文本输入
+    public static String Input(){
+        Scanner input=new Scanner(System.in);
+        String address=input.next();
+        return address;
+    }
+
+    //将文本转化为字符串
+    public static String Conver() throws IOException {
+        StringBuffer buffer = new StringBuffer();
+        String s = null;
+        String add = Input();
+        BufferedReader bf = new BufferedReader(new FileReader(add));
+        while ((s = bf.readLine()) != null) {
+            buffer.append(s.trim());
+        }
+        String str = buffer.toString();//将论文转化为字符串
+        String string = str.replaceAll("\\s*", "");//除去字符串中所有空白字符，包括空格、换行等。
+        return string;
+    }
+
+//句子查重
+    public static float sentenceDuplication(String str, String strX){//重复率
+        float R;//单句重复字数
+        int repetNumber = 0;//将字符串转化为字符数组
+        char[] chars=str.toCharArray();
+        char[] charsX=strX.toCharArray();
+        //比较
+        for(int i=0;i<chars.length;i++){
+            for(int j=0;j<charsX.length;j++){
+                if(chars[i]==charsX[j]){
+                    charsX[j]='￥';//已匹配的就进行转化，避免重复
+                    repetNumber++;
+                    break;
+                }
+            }
+        }
+        R=(float)repetNumber/(float) chars.length;//单句话的重复率
+        return R;
+    }
+
+    //结果输出
+    public static void Output(float result,String resultadd) throws IOException {
+        File f=new File(resultadd);//新建txt文件
+        f.createNewFile();
+        FileWriter fw=new FileWriter(f);
+        fw.write("相似度："+result);
+        fw.close();
+    }
+}
